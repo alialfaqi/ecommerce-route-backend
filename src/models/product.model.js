@@ -72,3 +72,13 @@ const productSchema = new mongoose.Schema({
     timestamps: true
 }
 )
+//hooks -- mongoose middleware
+productSchema.post('init', (doc) => {
+    doc.imageCover = process.env.BASE_URL + "product/" + doc.imageCover;
+    doc.images = doc.images.map(ele => process.env.BASE_URL + "product/" + ele)
+})
+
+
+export const productModel = mongoose.model("Product", productSchema)
+
+

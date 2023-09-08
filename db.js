@@ -5,3 +5,4 @@ export const connection = () => {
         .then(() => console.log('DB Connected!'))
         .catch(() => console.log("DB Error"))
 }
+

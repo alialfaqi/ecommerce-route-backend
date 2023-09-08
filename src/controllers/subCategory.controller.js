@@ -2,6 +2,7 @@ import { Types } from "mongoose";
 import AppError from "../../utils/AppError.js";
 import slugify from "slugify";
 import { subCategoryModel } from "../models/subcategory.model.js";
+import catchAsyncError from "../middlewares/catchAsyncError.js";
 
 const createSubCategory = async (req, res, next) => {
     const { name, categoryId } = req.body;
@@ -16,7 +17,7 @@ const createSubCategory = async (req, res, next) => {
 }
 
 
-const getAllSubCategories = async (req, res, next) => {
+const getAllSubCategories = catchAsyncError(async (req, res, next) => {
     let filter = {}
     if (req.params && req.params.id) {
         filter = {
@@ -26,6 +27,8 @@ const getAllSubCategories = async (req, res, next) => {
     const results = await subCategoryModel.find(filter)
     res.send({ message: "Done", results })
 }
+)
+
 
 const getSubCategoryById = async (req, res, next) => {
     const { id } = req.params

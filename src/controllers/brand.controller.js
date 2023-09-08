@@ -2,11 +2,14 @@ import { Types } from "mongoose";
 import AppError from "../../utils/AppError.js";
 import { brandModel } from "../models/brand.model.js"
 import slugify from "slugify";
+import ApiFeature from "../../utils/APIFeature.js";
 
 const createBrand = async (req, res, next) => {
-    const { name } = req.body;
+    // const { name } = req.body;
+    req.body.slug = slugify(req.body.name);
+    req.body.logo = req.file.filename;
 
-    const addedBrand = await brandModel.insertMany({ name, slug: slugify(name) })
+    const addedBrand = await brandModel.insertMany(req.body)
     res.send({ message: "added", addedBrand })
     // await categoryModel.create({ name, slug: name })
 
@@ -17,8 +20,11 @@ const createBrand = async (req, res, next) => {
 
 
 const getAllBrands = async (req, res, next) => {
-    const results = await brandModel.find({})
-    res.send({ message: "Done", results })
+    // const results = await brandModel.find({})
+    // res.send({ message: "Done", results })
+    let apiFeature = new ApiFeature(brandModel.find(), req.query).pagination().sort().search()
+    let results = await apiFeature.mongooseQuery
+    res.send({ message: "Done", page: apiFeature.page, results })
 }
 
 const getBrandById = async (req, res, next) => {

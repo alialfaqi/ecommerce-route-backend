@@ -18,4 +18,8 @@ const categorySchema = new mongoose.Schema({
     timestamps: true
 })
 
+categorySchema.post('init', (doc) => {
+    console.log(doc, 'from doc');
+})
+
 export const categoryModel = mongoose.model("Category", categorySchema);

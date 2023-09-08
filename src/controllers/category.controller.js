@@ -2,39 +2,50 @@ import { Types } from "mongoose";
 import AppError from "../../utils/AppError.js";
 import { categoryModel } from "../models/category.model.js";
 import slugify from "slugify";
+import ApiFeature from "../../utils/APIFeature.js";
+import catchAsyncError from "../middlewares/catchAsyncError.js"
 
-const createCategory = async (req, res, next) => {
-    const { name } = req.body;
 
-    const addedCategory = await categoryModel.insertMany({ name, slug: slugify(name) })
-    res.send({ message: "added", addedCategory })
+
+
+
+const createCategory = catchAsyncError(async (req, res, next) => {
+    req.body.slug = slugify(req.body.name)
+    req.body.image = req.file.filename
+
+    // const addedCategory = await categoryModel.insertMany(req.body)
+
+    // res.send({ message: "added", addedCategory })
     // await categoryModel.create({ name, slug: name })
 
-    // const result = new categoryModel({ name, slug: slugify(name) })
-    // await result.save()
+    const result = new categoryModel(req.body)
+    await result.save()
+})
 
-}
 
+const getAllCategories = catchAsyncError(async (req, res, next) => {
+    let apiFeature = new ApiFeature(categoryModel.find(), req.query).pagination().sort().search()
+    let results = await apiFeature.mongooseQuery
+    res.send({ message: "Done", page: apiFeature.page, results })
+})
 
-const getAllCategories = async (req, res, next) => {
-    const results = await categoryModel.find({})
-    res.send({ message: "Done", results })
-}
-
-const getCategoryById = async (req, res, next) => {
+const getCategoryById = catchAsyncError(async (req, res, next) => {
     const { id } = req.params
     const results = await categoryModel.findById(id)
     res.send({ message: "Done", results })
-}
+})
 
-const updateCategory = async (req, res, next) => {
-    const { id } = req.params;
-    const { name } = req.body;
-    const result = await categoryModel.findByIdAndUpdate(id, { name, slug: slugify(name) }, { new: true })
-    !result && next(new AppError("not found category", 404))
-    result && res.send({ message: "success", result })
-}
-const deleteCategory = async (req, res, next) => {
+const updateCategory = catchAsyncError(
+    async (req, res, next) => {
+        const { id } = req.params;
+        const { name } = req.body;
+        const result = await categoryModel.findByIdAndUpdate(id, { name, slug: slugify(name) }, { new: true })
+        !result && next(new AppError("not found category", 404))
+        result && res.send({ message: "success", result })
+    }
+)
+
+const deleteCategory = catchAsyncError(async (req, res, next) => {
     const { id } = req.params;
     // check if id is a valid objectId
     if (!Types.ObjectId.isValid(id))
@@ -43,7 +54,7 @@ const deleteCategory = async (req, res, next) => {
     if (!result)
         return next(new AppError("Category does not exist.", 404));
     res.send({ message: "success", result })
-}
+})
 
 export {
     createCategory,
@@ -52,3 +63,4 @@ export {
     updateCategory,
     deleteCategory
 }
+
