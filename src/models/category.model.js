@@ -20,6 +20,7 @@ const categorySchema = new mongoose.Schema({
 
 categorySchema.post('init', (doc) => {
     console.log(doc, 'from doc');
+    doc.image = `http://localhost:3000/category/${doc.image}`
 })
 
 export const categoryModel = mongoose.model("Category", categorySchema);

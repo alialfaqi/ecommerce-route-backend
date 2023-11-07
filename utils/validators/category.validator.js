@@ -8,3 +8,4 @@ export const createCategorySchema = Joi.object({
 export const getCategoryByIdSchema = Joi.object({
     id: Joi.string().hex().length(24).required()
 })
+

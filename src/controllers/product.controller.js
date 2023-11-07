@@ -11,6 +11,8 @@ const createProduct = async (req, res, next) => {
     req.body.images = req.files.images.map(img => img.filename)
     const addedProduct = await productModel.insertMany(req.body)
     res.send({ message: "added", addedProduct })
+
+
     // await categoryModel.create({ name, slug: name })
 
     // const result = new categoryModel({ name, slug: slugify(name) })
@@ -83,7 +85,7 @@ const getProductById = async (req, res, next) => {
 const updateProduct = async (req, res, next) => {
     const { id } = req.params;
     const { title } = req.body;
-    if (req.body.name) {
+    if (req.body.title) {
         req.body.slug = slugify(title)
     }
     const result = await productModel.findByIdAndUpdate(id, { ...req.body }, { new: true })

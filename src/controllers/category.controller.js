@@ -20,6 +20,7 @@ const createCategory = catchAsyncError(async (req, res, next) => {
 
     const result = new categoryModel(req.body)
     await result.save()
+    res.send({ message: "success", doc: result })
 })
 
 

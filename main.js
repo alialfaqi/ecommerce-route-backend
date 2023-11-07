@@ -16,7 +16,7 @@ const port = 3000
 connection()
 
 //Middlewares
-app.use(express.static('uploads'))
+app.use(express.static('uploads'))  //
 app.use(express.json())
 app.use(express.urlencoded({ extended: true }))
 app.use(morgan("dev"))   //for loggging most common is dev   
